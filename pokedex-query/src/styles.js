@@ -19,6 +19,12 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: '"Helvetica Neue", sans-serif',
     paddingTop: theme.spacing(3),
   },
+  button: {
+    backgroundColor: "#f00000",
+  },
+  cardGrid: {
+    paddingTop: theme.spacing(3),
+  },
 }));
 
 export default useStyles;

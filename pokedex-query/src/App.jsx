@@ -1,4 +1,5 @@
 import React from "react";
+import { useState } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import useStyles from "./styles";
 
@@ -9,6 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import DirectionsIcon from "@mui/icons-material/Directions";
+import { fetchPokemon } from "./pokemon";
 
 import {
   Typography,
@@ -26,8 +28,33 @@ import {
 } from "@material-ui/core";
 
 import CatchingPokemonIcon from "@mui/icons-material/CatchingPokemon";
+import { useEffect } from "react";
 
 const App = () => {
+  const [pokemonData, setPokemonData] = React.useState([]);
+  const [loadMore, setLoadMore] = React.useState(
+    "https://pokeapi.co/api/v2/pokemon?limit=20"
+  );
+
+  const getAllPokemon = async () => {
+    const res = await fetch(loadMore);
+    const data = await res.json();
+    setLoadMore(data.next);
+
+    function createPokemonObject(result) {
+      result.foreach(async (pokemon) => {
+        const res = await fetchPokemon(pokemon.url);
+        setPokemonData((currentList) => [...currentList, res]);
+      });
+    }
+
+    createPokemonObject(data.result);
+  };
+
+  useEffect(() => {
+    getAllPokemon();
+  }, []);
+
   const classes = useStyles();
   return (
     <>
@@ -97,6 +124,23 @@ const App = () => {
               </IconButton>
             </Paper>
           </Container>
+        </div>
+        <div className="pokemon-container">
+          <div className="all-container"></div>
+          <Grid
+            container
+            justify="center"
+            alignItems="center"
+            className={classes.cardGrid}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.button}
+            >
+              Load More
+            </Button>
+          </Grid>
         </div>
       </main>
     </>
